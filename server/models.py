@@ -16,12 +16,12 @@ db = SQLAlchemy(metadata=metadata)
 class Research(db.Model, SerializerMixin):
     __tablename__ = 'researches'
 
-    serialize_rules = ('-research_authors.researches',
-                       '-created_at', '-updated_at')
+    serialize_rules = ('-research_authors.researches', '-research_authors.author_id', '-research_authors.research_id',
+                       '-research_authors.id', '-created_at', '-updated_at')
 
     id = db.Column(db.Integer, primary_key=True)
-    topic = db.Column(db.String)
-    year = db.Column(db.Integer)
+    topic = db.Column(db.String, nullable=False)
+    year = db.Column(db.Integer, nullable=False)
     page_count = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
@@ -43,8 +43,8 @@ class Author(db.Model, SerializerMixin):
                        '-created_at', '-updated_at')
 
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String)
-    field_of_study = db.Column(db.String)
+    name = db.Column(db.String, nullable=False)
+    field_of_study = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
 
@@ -68,7 +68,9 @@ class ResearchAuthors(db.Model, SerializerMixin):
                        '-authors.research_authors', '-research.research_authors')
 
     id = db.Column(db.Integer, primary_key=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('authors.id'))
-    research_id = db.Column(db.Integer, db.ForeignKey('researches.id'))
+    author_id = db.Column(db.Integer, db.ForeignKey(
+        'authors.id'), nullable=False)
+    research_id = db.Column(db.Integer, db.ForeignKey(
+        'researches.id'), nullable=False)
     created_at = db.Column(db.DateTime, server_default=db.func.now())
     updated_at = db.Column(db.DateTime, onupdate=db.func.now())
